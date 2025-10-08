@@ -1,54 +1,253 @@
-# Provinces Full-Stack Starter (VN Address Picker via Third-Party API)
+# 🏠 Location Selector - Full-Stack Application
 
-Full-stack mẫu: **Express backend proxy** + **Vite React + Tailwind + Zustand** frontend.
-Dùng API bên thứ ba: `https://provinces.open-api.vn/api/v1/` để lấy Tỉnh/Quận/Phường và Google Geocoding để lấy toạ độ.
+Full-stack application cho chọn địa chỉ Việt Nam với autocomplete và geocoding, được xây dựng theo mô hình **MVC** chuẩn.
 
-## Cấu trúc
+## 📦 Tech Stack
+
+### Backend
+- **Framework**: Express.js
+- **Architecture**: MVC Pattern
+- **APIs**: 
+  - Provinces API (provinces.open-api.vn)
+  - DistanceMatrix.ai (Geocoding)
+  - Vietmap API (Autocomplete)
+
+### Frontend
+- **Framework**: React + Vite
+- **State Management**: Zustand
+- **Styling**: TailwindCSS
+- **Icons**: Lucide React
+
+## 📁 Project Structure
+
 ```
-provinces-fullstack-starter/
-├─ server/
-│  ├─ server.js
-│  ├─ package.json
-│  └─ .env.example
-└─ client/
-   ├─ index.html
-   ├─ vite.config.js
-   ├─ tailwind.config.js
-   ├─ postcss.config.js
-   ├─ package.json
-   └─ src/
-      ├─ index.css
-      ├─ main.jsx
-      ├─ App.jsx
-      ├─ store/addressStore.js
-      └─ components/AddressSelector.jsx
+location/
+├── server/                          # BACKEND (MVC)
+│   ├── src/
+│   │   ├── config/                 # Configuration
+│   │   │   └── env.js
+│   │   ├── controllers/            # Request handlers
+│   │   │   ├── addressController.js
+│   │   │   └── geocodeController.js
+│   │   ├── services/               # Business logic
+│   │   │   ├── provinceService.js
+│   │   │   ├── geocodeService.js
+│   │   │   └── autocompleteService.js
+│   │   ├── routes/                 # API routes
+│   │   │   ├── index.js
+│   │   │   ├── addressRoutes.js
+│   │   │   └── geocodeRoutes.js
+│   │   ├── middlewares/            # Middlewares
+│   │   │   └── errorHandler.js
+│   │   └── utils/                  # Utilities
+│   │       ├── cache.js
+│   │       └── logger.js
+│   ├── server.js                   # Entry point
+│   ├── package.json
+│   └── .env
+│
+└── client/                          # FRONTEND
+    ├── src/
+    │   ├── components/             
+    │   │   ├── common/
+    │   │   │   └── LoadingSpinner.jsx
+    │   │   └── address/
+    │   │       ├── AddressSelector.jsx
+    │   │       ├── ProvinceSelect.jsx
+    │   │       ├── DistrictSelect.jsx
+    │   │       ├── WardSelect.jsx
+    │   │       ├── StreetInput.jsx
+    │   │       └── MapDisplay.jsx
+    │   ├── store/                  # Zustand stores
+    │   │   └── addressStore.js
+    │   ├── services/               # API clients
+    │   │   └── api.js
+    │   ├── hooks/                  # Custom hooks
+    │   │   └── useAutocomplete.js
+    │   ├── utils/                  # Utilities
+    │   │   └── helpers.js
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css
+    ├── package.json
+    └── vite.config.js
 ```
 
-## Chạy dự án (local)
-1. **Backend**
-   ```bash
-   cd server
-   cp .env.example .env
-   # sửa GOOGLE_API_KEY=... của bạn
-   npm install
-   npm run dev
-   ```
-   Server default: `http://localhost:5000`
+## 🚀 Installation & Setup
 
-2. **Frontend**
-   ```bash
-   cd ../client
-   npm install
-   npm run dev
-   ```
-   Frontend default: `http://localhost:5173` (đã cấu hình proxy `/api` tới backend).
+### 1. Backend Setup
 
-## Lưu ý
-- API tỉnh/huyện/phường **không có tên đường** ⇒ nhập tự do ở frontend rồi gọi `/api/geocode?address=...` để ra toạ độ.
-- Giữ `depth=1` (tỉnh) và `depth=2` (tỉnh+kèm quận, quận+kèm phường) để tối ưu tải.
-- Ẩn Google API key trong **server/.env** (không commit).
+```bash
+cd server
 
-## Nâng cấp gợi ý
-- Thêm autocomplete tìm kiếm phường/đường.
-- Cache server (memory/Redis) cho danh sách tĩnh.
-- Thêm rate-limit, logging, và unit test cho endpoints.
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+
+# Add your API keys to .env
+# DISTANCEMATRIX_API_KEY=your_key_here
+# VIETMAP_API_KEY=your_key_here
+
+# Start development server
+npm run dev
+```
+
+Server will run on: `http://localhost:5000`
+
+### 2. Frontend Setup
+
+```bash
+cd client
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+Frontend will run on: `http://localhost:5173`
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+```env
+PORT=5000
+DISTANCEMATRIX_API_KEY=your_distancematrix_api_key
+VIETMAP_API_KEY=your_vietmap_api_key
+NODE_ENV=development
+```
+
+## 📡 API Endpoints
+
+### Address Endpoints
+- `GET /api/health` - Health check
+- `GET /api/provinces?depth=1` - Get all provinces
+- `GET /api/provinces/:code?depth=2` - Get province with districts
+- `GET /api/districts/:code?depth=2` - Get district with wards
+
+### Geocoding Endpoints
+- `GET /api/geocode?address=...` - Get coordinates for address
+- `GET /api/test-geocode?address=...` - Test geocoding
+- `GET /api/autocomplete-streets?q=...&district=...&province=...` - Autocomplete streets
+
+## ✨ Features
+
+### 🎯 Core Features
+- ✅ Select Province/District/Ward (Cascading dropdowns)
+- ✅ Street name autocomplete with Vietmap API
+- ✅ Geocoding to get GPS coordinates
+- ✅ Google Maps integration
+- ✅ Responsive design
+
+### ⌨️ Keyboard Navigation
+- `↓` Arrow Down - Next suggestion
+- `↑` Arrow Up - Previous suggestion
+- `Enter` - Select highlighted suggestion
+- `Esc` - Close suggestions
+
+### 🎨 UI/UX
+- Real-time autocomplete suggestions
+- Loading states
+- Error handling
+- Visual feedback on selection
+
+## 🏗️ Architecture Patterns
+
+### Backend (MVC)
+```
+Request → Route → Controller → Service → External API
+                      ↓
+                   Response
+```
+
+### Frontend (Zustand + Custom Hooks)
+```
+Component → Zustand Store → API Service → Backend
+              ↓
+         State Updates
+```
+
+## 🔄 Data Flow
+
+1. **User selects Province** → Load Districts
+2. **User selects District** → Load Wards
+3. **User selects Ward** → Enable Street input
+4. **User types Street** → Autocomplete suggestions (Vietmap API)
+5. **User selects Street** → Auto-geocode
+6. **Geocode** → Get coordinates → Display on map
+
+## 📝 Scripts
+
+### Backend
+```bash
+npm run dev      # Start development server with nodemon
+npm start        # Start production server
+```
+
+### Frontend
+```bash
+npm run dev      # Start Vite dev server
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
+
+## 🛠️ Development
+
+### Adding New Features
+
+#### Backend
+1. Create service in `src/services/`
+2. Create controller in `src/controllers/`
+3. Create route in `src/routes/`
+4. Register route in `src/routes/index.js`
+
+#### Frontend
+1. Add API method in `src/services/api.js`
+2. Add action in `src/store/addressStore.js`
+3. Create/update component in `src/components/`
+
+## 📚 Key Dependencies
+
+### Backend
+- `express` - Web framework
+- `cors` - CORS middleware
+- `dotenv` - Environment variables
+- `node-fetch` - HTTP client
+
+### Frontend
+- `react` - UI framework
+- `zustand` - State management
+- `lucide-react` - Icons
+- `tailwindcss` - Styling
+
+## 🐛 Troubleshooting
+
+### Backend not starting?
+- Check if `.env` file exists
+- Verify API keys are correct
+- Check if port 5000 is available
+
+### Autocomplete not working?
+- Verify `VIETMAP_API_KEY` in `.env`
+- Check browser console for errors
+- Ensure Ward/District/Province are selected
+
+### Geocoding fails?
+- Verify `DISTANCEMATRIX_API_KEY` in `.env`
+- Check if address is complete
+- Review server logs
+
+## 📄 License
+
+MIT
+
+## 👨‍💻 Author
+
+Your Name
+
+---
+
+**Happy Coding! 🎉**
