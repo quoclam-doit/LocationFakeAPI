@@ -426,25 +426,6 @@ A: Side effects (API calls, subscriptions) → Demo
 
 ---
 
-## 🤝 Contributing
-
-Nếu bạn muốn contribute tài liệu:
-
-1. Fork repo
-2. Tạo branch mới
-3. Add/edit tài liệu
-4. Submit pull request
-
-**Cần thêm:**
-
-- [ ] Video tutorials
-- [ ] More exercises
-- [ ] Quiz with auto-grading
-- [ ] Interactive demos
-- [ ] Translation (English)
-
----
-
 ## 📧 Support
 
 Có câu hỏi? Liên hệ:
